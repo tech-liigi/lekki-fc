@@ -63,6 +63,7 @@ interface Section {
   title: string;
   id: string;
   visible: boolean;
+  blockContent: BlockContent;
   description: string;
   tagline: string;
   image: {
@@ -87,7 +88,23 @@ export interface navResponse {
   pages: Page[];
 }
 
-export const bannerQuery = groq`*[_type == "banner"][0]`;
+export const bannerQuery = groq`*[_type == "banner"][0] {
+ background,
+ items[] -> {
+      _type,
+      title,
+      slug,
+      preview,
+      category->{
+        title
+      },
+      short_description, 
+      video {
+        url,
+       preview
+      }
+}       
+}`;
 
 interface Author {
   _type: "reference";
@@ -155,20 +172,13 @@ export interface Video {
   short_description: string;
 }
 
-interface Image {
-  image: {
-    _type: "image";
+export interface BannerResponse {
+  background: {
     asset: {
       _ref: string;
     };
   };
-}
-export interface BannerResponse {
-  cta_item: {
-    title: string;
-    link: string;
-  };
-  images: Array<Image>;
+  items: Array<News | Video>;
 }
 
 export const sponsorsQuery = groq`*[_type == "sponsors"]`;
